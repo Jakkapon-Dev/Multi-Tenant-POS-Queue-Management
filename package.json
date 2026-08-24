@@ -1,0 +1,30 @@
+{
+  "name": "project-pos",
+  "version": "0.3.0",
+  "description": "Multi-Tenant Restaurant & Cafe POS with Real-Time Kitchen Display System",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "dev:server": "npm run dev --prefix server",
+    "dev:client": "npm run dev --prefix client",
+    "build": "npm run build --prefix server && npm run build --prefix client",
+    "seed": "npm run seed --prefix server",
+    "test": "npm run test --prefix server"
+  },
+  "keywords": [
+    "pos",
+    "restaurant-management",
+    "multi-tenant",
+    "kds",
+    "react",
+    "typescript",
+    "socketio",
+    "prisma",
+    "full-stack"
+  ],
+  "author": "FullStack Portfolio",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
