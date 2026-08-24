@@ -50,22 +50,22 @@ export const InventoryView: React.FC<InventoryViewProps> = ({ tenant }) => {
   const totalStockValue = ingredients.reduce((sum, i) => sum + i.currentStock * i.costPerUnit, 0);
 
   return (
-    <div className="flex-1 overflow-y-auto p-6 bg-slate-950 text-slate-100 space-y-6">
+    <div className="flex-1 overflow-y-auto p-6 bg-slate-950 text-slate-100 space-y-6 font-sans">
       
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold text-white flex items-center gap-2">
+          <h2 className="text-lg font-black text-white flex items-center gap-2">
             <Layers className="w-5 h-5 text-purple-400" />
             Raw Ingredients & Automated Recipe Deduction
           </h2>
-          <p className="text-xs text-slate-400 mt-1">
-            Real-time stock tracking with automated recipe deduction on every completed order.
+          <p className="text-xs text-slate-400 mt-0.5">
+            Real-time stock ledger with automatic recipe deduction on fulfilled orders
           </p>
         </div>
         <button
           onClick={fetchIngredients}
-          className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl border border-slate-700 transition"
+          className="p-2 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded-xl border border-white/10 transition"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
         </button>
@@ -73,21 +73,21 @@ export const InventoryView: React.FC<InventoryViewProps> = ({ tenant }) => {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4">
-          <span className="text-xs text-slate-400">Total Tracked Ingredients</span>
-          <div className="text-2xl font-extrabold text-white mt-1">{ingredients.length} items</div>
+        <div className="bg-slate-900/80 border border-white/[0.08] rounded-3xl p-5">
+          <span className="text-xs font-bold text-slate-400">Total Tracked Ingredients</span>
+          <div className="text-2xl font-black text-white mt-1 font-mono">{ingredients.length} SKU</div>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4">
-          <span className="text-xs text-slate-400">Low Stock Warnings</span>
-          <div className={`text-2xl font-extrabold mt-1 ${lowStockCount > 0 ? 'text-amber-400' : 'text-emerald-400'}`}>
+        <div className="bg-slate-900/80 border border-white/[0.08] rounded-3xl p-5">
+          <span className="text-xs font-bold text-slate-400">Low Stock Warnings</span>
+          <div className={`text-2xl font-black mt-1 font-mono ${lowStockCount > 0 ? 'text-amber-400' : 'text-emerald-400'}`}>
             {lowStockCount} items
           </div>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4">
-          <span className="text-xs text-slate-400">Est. Inventory Value</span>
-          <div className="text-2xl font-extrabold text-emerald-400 mt-1">
+        <div className="bg-slate-900/80 border border-white/[0.08] rounded-3xl p-5">
+          <span className="text-xs font-bold text-slate-400">Est. Raw Asset Value</span>
+          <div className="text-2xl font-black text-emerald-400 mt-1 font-mono">
             ฿{Math.round(totalStockValue).toLocaleString()}
           </div>
         </div>
@@ -102,27 +102,27 @@ export const InventoryView: React.FC<InventoryViewProps> = ({ tenant }) => {
           return (
             <div
               key={ing.id}
-              className={`bg-slate-900 border rounded-2xl p-4 flex flex-col justify-between transition ${
-                isLow ? 'border-amber-500/50 ring-1 ring-amber-500/20' : 'border-slate-800'
+              className={`bg-slate-900/80 border rounded-3xl p-5 flex flex-col justify-between transition ${
+                isLow ? 'border-amber-500/50 ring-1 ring-amber-500/20' : 'border-white/[0.08]'
               }`}
             >
               <div>
                 <div className="flex items-start justify-between">
-                  <h4 className="font-bold text-sm text-white">{ing.name}</h4>
+                  <h4 className="font-bold text-xs text-white">{ing.name}</h4>
                   {isLow && (
-                    <span className="bg-amber-500/20 text-amber-300 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-                      <AlertTriangle className="w-3 h-3" /> Low Stock
+                    <span className="bg-amber-500/20 text-amber-300 text-[10px] font-black px-2 py-0.5 rounded-full flex items-center gap-1 font-mono">
+                      <AlertTriangle className="w-3 h-3" /> LOW STOCK
                     </span>
                   )}
                 </div>
 
-                <div className="mt-3 flex items-baseline justify-between">
-                  <span className="text-2xl font-extrabold text-white">
+                <div className="mt-3 flex items-baseline justify-between font-mono">
+                  <span className="text-2xl font-black text-white">
                     {ing.currentStock.toLocaleString()}{' '}
-                    <span className="text-xs font-semibold text-slate-400">{ing.unit}</span>
+                    <span className="text-xs font-semibold text-slate-400 font-sans">{ing.unit}</span>
                   </span>
                   <span className="text-xs text-slate-400">
-                    Alert at: {ing.minStockAlert} {ing.unit}
+                    Threshold: {ing.minStockAlert} {ing.unit}
                   </span>
                 </div>
 
@@ -138,15 +138,15 @@ export const InventoryView: React.FC<InventoryViewProps> = ({ tenant }) => {
 
                 {/* Linked Dishes */}
                 {ing.recipeItems && ing.recipeItems.length > 0 && (
-                  <div className="mt-4 pt-3 border-t border-slate-800">
-                    <span className="text-[11px] text-slate-400 font-semibold block mb-1.5">
+                  <div className="mt-4 pt-3 border-t border-white/[0.06]">
+                    <span className="text-[11px] text-slate-400 font-bold block mb-1.5">
                       Auto-deducted in recipes:
                     </span>
                     <div className="flex flex-wrap gap-1.5">
                       {ing.recipeItems.map((r: any) => (
                         <span
                           key={r.id}
-                          className="text-[10px] bg-slate-800/80 text-slate-300 px-2 py-0.5 rounded-md border border-slate-700/60"
+                          className="text-[10px] bg-slate-800/80 text-slate-300 px-2 py-0.5 rounded-md border border-white/10 font-mono"
                         >
                           {r.menuItem?.name} (-{r.quantityRequired}{ing.unit})
                         </span>
@@ -157,16 +157,16 @@ export const InventoryView: React.FC<InventoryViewProps> = ({ tenant }) => {
               </div>
 
               {/* Action */}
-              <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between">
-                <span className="text-[11px] text-slate-400">Cost: ฿{ing.costPerUnit}/{ing.unit}</span>
+              <div className="mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between">
+                <span className="text-[11px] text-slate-400 font-mono">Unit Cost: ฿{ing.costPerUnit}/{ing.unit}</span>
                 <button
                   onClick={() => {
                     setSelectedIngredient(ing);
                     setRestockAmount(ing.unit === 'g' || ing.unit === 'ml' ? 1000 : 20);
                   }}
-                  className="bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/30 font-bold px-3 py-1 rounded-xl text-xs flex items-center gap-1 transition"
+                  className="bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/30 font-black px-3.5 py-1.5 rounded-xl text-xs flex items-center gap-1 transition shadow-sm"
                 >
-                  <Plus className="w-3 h-3" />
+                  <Plus className="w-3.5 h-3.5" />
                   <span>Restock</span>
                 </button>
               </div>
@@ -177,11 +177,11 @@ export const InventoryView: React.FC<InventoryViewProps> = ({ tenant }) => {
 
       {/* Restock Modal */}
       {selectedIngredient && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-sm bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="w-full max-w-sm bg-slate-900 border border-white/10 rounded-3xl p-6 shadow-2xl space-y-4 animate-slide-up">
+            <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
               <div>
-                <h3 className="font-bold text-sm text-white">Restock Inventory</h3>
+                <h3 className="font-extrabold text-sm text-white">Stock In Ledger</h3>
                 <p className="text-xs text-slate-400">{selectedIngredient.name}</p>
               </div>
               <button onClick={() => setSelectedIngredient(null)} className="text-slate-400 hover:text-white">
@@ -190,21 +190,21 @@ export const InventoryView: React.FC<InventoryViewProps> = ({ tenant }) => {
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs text-slate-400">Add Quantity ({selectedIngredient.unit}):</label>
+              <label className="text-xs text-slate-400 font-semibold">Quantity to Add ({selectedIngredient.unit}):</label>
               <input
                 type="number"
                 value={restockAmount}
                 onChange={(e) => setRestockAmount(parseFloat(e.target.value) || 0)}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2 text-white font-bold text-sm focus:outline-none focus:ring-1 focus:ring-purple-500"
+                className="w-full bg-slate-800 border border-white/10 rounded-xl px-3.5 py-2 text-white font-black text-sm focus:outline-none focus:ring-1 focus:ring-purple-500 font-mono"
               />
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex gap-2 font-mono">
               {[500, 1000, 2500].map((amt) => (
                 <button
                   key={amt}
                   onClick={() => setRestockAmount(amt)}
-                  className="flex-1 py-1.5 bg-slate-800 hover:bg-slate-700 rounded-lg text-xs font-bold text-slate-300 border border-slate-700"
+                  className="flex-1 py-1.5 bg-slate-800 hover:bg-slate-700 rounded-xl text-xs font-bold text-slate-300 border border-white/10"
                 >
                   +{amt}
                 </button>
@@ -213,7 +213,7 @@ export const InventoryView: React.FC<InventoryViewProps> = ({ tenant }) => {
 
             <button
               onClick={handleRestock}
-              className="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-lg shadow-purple-600/20"
+              className="w-full bg-purple-600 hover:bg-purple-500 text-white font-black py-3 rounded-2xl text-xs transition shadow-lg shadow-purple-600/20"
             >
               Confirm Restock (+{restockAmount} {selectedIngredient.unit})
             </button>

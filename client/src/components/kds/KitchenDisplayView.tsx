@@ -27,7 +27,7 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
   const [loading, setLoading] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
 
-  // Synth chime for incoming orders
+  // Web Audio chime
   const playNewOrderChime = () => {
     if (!soundEnabled) return;
     try {
@@ -37,8 +37,8 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
-      osc.frequency.setValueAtTime(880.0, ctx.currentTime + 0.15); // A5
+      osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+      osc.frequency.setValueAtTime(880.0, ctx.currentTime + 0.15);
       gain.gain.setValueAtTime(0.2, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
       osc.connect(gain);
@@ -46,7 +46,7 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
       osc.start();
       osc.stop(ctx.currentTime + 0.5);
     } catch (e) {
-      console.warn('Audio context alert:', e);
+      console.warn('Audio alert:', e);
     }
   };
 
@@ -54,7 +54,6 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
     fetchKdsOrders();
     const interval = setInterval(() => setCurrentTime(new Date()), 10000);
 
-    // Setup Socket connection
     const socket = getSocket();
     joinTenantRoom(tenant.id);
 
@@ -129,7 +128,6 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
     }
   };
 
-  // Calculate elapsed time in minutes
   const getElapsedMinutes = (createdAt: string): number => {
     const start = new Date(createdAt).getTime();
     const now = currentTime.getTime();
@@ -142,34 +140,34 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
   });
 
   return (
-    <div className="flex-1 flex flex-col h-screen overflow-hidden bg-slate-950 text-slate-100">
+    <div className="flex-1 flex flex-col h-screen overflow-hidden bg-slate-950 text-slate-100 font-sans">
       
       {/* Top KDS Navbar */}
-      <header className="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between flex-shrink-0">
+      <header className="h-16 bg-slate-900/80 backdrop-blur-xl border-b border-white/[0.08] px-6 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center font-bold">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-2xl bg-orange-500/20 text-orange-400 flex items-center justify-center font-black">
               <ChefHat className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="font-bold text-base text-white tracking-tight flex items-center gap-2">
+              <h2 className="font-extrabold text-sm text-white tracking-tight flex items-center gap-2">
                 Kitchen Display System (KDS)
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                <span className="w-2 h-2 rounded-full bg-orange-400 animate-ping"></span>
               </h2>
-              <p className="text-[11px] text-slate-400">{tenant.name} • Live Queue</p>
+              <p className="text-[11px] text-slate-400 font-mono">{tenant.name} • Live Ticket Stream</p>
             </div>
           </div>
 
-          {/* Status Filters */}
-          <div className="flex bg-slate-800 p-1 rounded-xl border border-slate-700 ml-4">
+          {/* Status Filter Tabs */}
+          <div className="flex bg-slate-950/80 p-1 rounded-xl border border-white/[0.08] ml-4">
             {(['ALL', 'PENDING', 'PREPARING', 'READY'] as const).map((status) => (
               <button
                 key={status}
                 onClick={() => setFilterStatus(status)}
-                className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
+                className={`px-3 py-1 rounded-lg text-xs font-black transition ${
                   filterStatus === status
-                    ? 'bg-orange-500 text-slate-950 shadow-sm'
-                    : 'text-slate-300 hover:text-white'
+                    ? 'bg-orange-500 text-slate-950 shadow-md shadow-orange-500/20'
+                    : 'text-slate-400 hover:text-white'
                 }`}
               >
                 {status} ({orders.filter((o) => (status === 'ALL' ? true : o.status === status)).length})
@@ -179,28 +177,27 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Sound Toggle */}
+          {/* Sound alert switch */}
           <button
             onClick={() => setSoundEnabled(!soundEnabled)}
-            className={`p-2 rounded-xl border transition flex items-center gap-1.5 text-xs font-semibold ${
+            className={`px-3 py-1.5 rounded-xl border transition flex items-center gap-1.5 text-xs font-bold ${
               soundEnabled
-                ? 'bg-slate-800 border-slate-700 text-emerald-400'
-                : 'bg-slate-800/40 border-slate-800 text-slate-500'
+                ? 'bg-slate-900 border-white/10 text-emerald-400'
+                : 'bg-slate-900/40 border-white/[0.04] text-slate-500'
             }`}
-            title="Toggle alert chime"
           >
-            {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
-            <span>Sound {soundEnabled ? 'ON' : 'OFF'}</span>
+            {soundEnabled ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
+            <span>Chime {soundEnabled ? 'ON' : 'OFF'}</span>
           </button>
 
           <button
             onClick={fetchKdsOrders}
-            className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl border border-slate-700 transition"
+            className="p-2 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded-xl border border-white/10 transition"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
 
-          <div className="bg-slate-800/80 border border-slate-700 px-3 py-1.5 rounded-xl text-xs font-semibold text-orange-400 flex items-center gap-1.5">
+          <div className="bg-slate-900 border border-white/10 px-3 py-1.5 rounded-xl text-xs font-bold text-orange-400 flex items-center gap-1.5 font-mono">
             <Flame className="w-3.5 h-3.5" />
             <span>Chef Station</span>
           </div>
@@ -208,12 +205,12 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
       </header>
 
       {/* Kanban Ticket Board */}
-      <div className="flex-1 overflow-x-auto overflow-y-hidden p-6 bg-slate-950/60">
+      <div className="flex-1 overflow-x-auto overflow-y-hidden p-6 bg-slate-950">
         {displayedOrders.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center text-slate-500">
-            <UtensilsCrossed className="w-16 h-16 mb-3 stroke-1 text-slate-600 animate-bounce" />
-            <h3 className="text-lg font-bold text-slate-300">All Kitchen Orders Cleared!</h3>
-            <p className="text-xs text-slate-500 mt-1">New incoming orders will appear here in real-time.</p>
+            <UtensilsCrossed className="w-14 h-14 mb-3 stroke-1 text-slate-700 animate-bounce" />
+            <h3 className="text-base font-extrabold text-slate-300">All Kitchen Tickets Cleared</h3>
+            <p className="text-xs text-slate-500 mt-1">New incoming customer orders will appear here in real-time.</p>
           </div>
         ) : (
           <div className="flex gap-5 h-full items-start">
@@ -245,8 +242,8 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
                   >
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-extrabold text-base text-white">{order.orderNumber}</span>
-                        <span className="text-xs bg-slate-950/40 text-slate-300 font-bold px-2 py-0.5 rounded-lg border border-slate-700">
+                        <span className="font-black text-base text-white font-mono">{order.orderNumber}</span>
+                        <span className="text-xs bg-slate-950/60 text-slate-200 font-bold px-2 py-0.5 rounded-lg border border-white/10">
                           {order.table ? `Table ${order.table.tableNumber}` : 'Takeaway'}
                         </span>
                       </div>
@@ -255,7 +252,7 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
 
                     {/* Timer Badge */}
                     <div
-                      className={`flex items-center gap-1 text-xs font-mono font-bold px-2.5 py-1 rounded-xl ${
+                      className={`flex items-center gap-1 text-xs font-mono font-black px-2.5 py-1 rounded-xl ${
                         isUrgent
                           ? 'bg-rose-500/20 text-rose-300 border border-rose-500/50 animate-pulse'
                           : isWarning
@@ -268,16 +265,16 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
                     </div>
                   </div>
 
-                  {/* Order Notes if any */}
+                  {/* Order Notes */}
                   {order.notes && (
-                    <div className="bg-amber-950/30 border-b border-amber-500/20 px-4 py-2 text-[11px] text-amber-300 flex items-center gap-1.5 font-medium">
+                    <div className="bg-amber-950/30 border-b border-amber-500/20 px-4 py-2 text-[11px] text-amber-300 flex items-center gap-1.5 font-semibold">
                       <AlertTriangle className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
                       <span>Note: {order.notes}</span>
                     </div>
                   )}
 
                   {/* Item Checklist */}
-                  <div className="flex-1 overflow-y-auto p-4 space-y-2.5 divide-y divide-slate-800/60">
+                  <div className="flex-1 overflow-y-auto p-4 space-y-2.5 divide-y divide-white/[0.06]">
                     {order.items.map((item) => {
                       const isDone = item.status === 'DONE';
                       let parsedModifiers: any[] = [];
@@ -314,7 +311,7 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
                                   {parsedModifiers.map((m, idx) => (
                                     <span
                                       key={idx}
-                                      className="text-[10px] bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded border border-slate-700"
+                                      className="text-[10px] bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded border border-white/10"
                                     >
                                       {m.optionName || m}
                                     </span>
@@ -331,12 +328,12 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
                     })}
                   </div>
 
-                  {/* Ticket Footer Action Buttons */}
-                  <div className="p-4 border-t border-slate-800 bg-slate-900/90 flex gap-2">
+                  {/* Action Buttons */}
+                  <div className="p-4 border-t border-white/[0.08] bg-slate-900/90 flex gap-2">
                     {order.status === 'PENDING' && (
                       <button
                         onClick={() => handleUpdateStatus(order.id, 'PREPARING')}
-                        className="flex-1 bg-orange-500 hover:bg-orange-400 text-slate-950 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 transition shadow-lg shadow-orange-500/20"
+                        className="flex-1 bg-orange-500 hover:bg-orange-400 text-slate-950 font-black py-2.5 rounded-2xl text-xs flex items-center justify-center gap-1.5 transition shadow-lg shadow-orange-500/20"
                       >
                         <Flame className="w-3.5 h-3.5" />
                         <span>Start Cooking</span>
@@ -346,7 +343,7 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
                     {order.status === 'PREPARING' && (
                       <button
                         onClick={() => handleUpdateStatus(order.id, 'READY')}
-                        className="flex-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 transition shadow-lg shadow-emerald-500/20"
+                        className="flex-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-2.5 rounded-2xl text-xs flex items-center justify-center gap-1.5 transition shadow-lg shadow-emerald-500/20"
                       >
                         <CheckCircle2 className="w-3.5 h-3.5" />
                         <span>Ready / Bump</span>
@@ -356,7 +353,7 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
                     {order.status === 'READY' && (
                       <button
                         onClick={() => handleUpdateStatus(order.id, 'SERVED')}
-                        className="flex-1 bg-blue-500 hover:bg-blue-400 text-slate-950 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 transition shadow-lg shadow-blue-500/20"
+                        className="flex-1 bg-blue-500 hover:bg-blue-400 text-white font-black py-2.5 rounded-2xl text-xs flex items-center justify-center gap-1.5 transition shadow-lg shadow-blue-500/20"
                       >
                         <Check className="w-3.5 h-3.5" />
                         <span>Served to Table</span>
