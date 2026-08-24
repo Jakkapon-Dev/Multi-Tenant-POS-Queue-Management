@@ -144,4 +144,11 @@ export const api = {
     if (!res.ok) throw new Error('Failed to restock ingredient');
     return res.json();
   },
+
+  // Analytics
+  async getAnalytics(tenantId: string): Promise<any> {
+    const res = await fetch(`${API_BASE}/analytics/tenant/${tenantId}`);
+    if (!res.ok) throw new Error('Failed to fetch analytics');
+    return res.json();
+  },
 };
