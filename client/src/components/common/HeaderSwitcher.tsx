@@ -1,12 +1,11 @@
 import React from 'react';
-import { Store, UserCircle2, Utensils, LayoutDashboard, Grid, ChefHat, Smartphone, Layers } from 'lucide-react';
+import { Store, Grid, ChefHat, Smartphone, Layers, LayoutDashboard } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export const HeaderSwitcher: React.FC = () => {
   const {
     tenants,
     currentTenant,
-    currentUser,
     currentRole,
     activeView,
     setActiveView,

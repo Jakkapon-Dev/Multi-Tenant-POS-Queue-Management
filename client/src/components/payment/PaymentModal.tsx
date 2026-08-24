@@ -3,11 +3,7 @@ import {
   QrCode,
   Banknote,
   CreditCard,
-  CheckCircle2,
-  Printer,
   X,
-  Sparkles,
-  ArrowRight,
   ShieldCheck,
 } from 'lucide-react';
 import { Tenant, Order } from '../../types';
@@ -30,7 +26,6 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   const [method, setMethod] = useState<'PROMPTPAY' | 'CASH' | 'CREDIT_CARD'>('PROMPTPAY');
   const [cashTendered, setCashTendered] = useState<number>(order.total);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
-  const [isDone, setIsDone] = useState<boolean>(false);
 
   if (!isOpen) return null;
 
@@ -38,7 +33,6 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
     setIsProcessing(true);
     setTimeout(() => {
       setIsProcessing(false);
-      setIsDone(true);
       const paidOrder: Order = {
         ...order,
         status: 'COMPLETED',

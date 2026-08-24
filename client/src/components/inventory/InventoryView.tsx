@@ -1,13 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Package,
   AlertTriangle,
   Plus,
   RefreshCw,
   Layers,
-  TrendingDown,
-  Sparkles,
-  CheckCircle2,
   X,
 } from 'lucide-react';
 import { Tenant } from '../../types';

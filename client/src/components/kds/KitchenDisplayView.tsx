@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ChefHat,
   Clock,
@@ -9,20 +9,18 @@ import {
   RefreshCw,
   Flame,
   Check,
-  RotateCcw,
-  Sparkles,
   UtensilsCrossed,
 } from 'lucide-react';
-import { Tenant, Order, OrderItem, User } from '../../types';
+import { Tenant, Order } from '../../types';
 import { api } from '../../services/api';
 import { getSocket, joinTenantRoom } from '../../services/socket';
 
 interface KitchenDisplayViewProps {
   tenant: Tenant;
-  currentUser?: User;
+  currentUser?: any;
 }
 
-export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant, currentUser }) => {
+export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }) => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const [filterStatus, setFilterStatus] = useState<'ALL' | 'PENDING' | 'PREPARING' | 'READY'>('ALL');

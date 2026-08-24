@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingBag, Utensils, Clock, Plus, Minus, Check, ArrowLeft, ChevronRight, X, AlertCircle } from 'lucide-react';
+import { ShoppingBag, Clock, Plus, Minus, Check, X } from 'lucide-react';
 import { Tenant, Category, MenuItem, DiningTable, CartItem, Order } from '../../types';
 import { api } from '../../services/api';
 

@@ -6,7 +6,6 @@ import {
   Banknote,
   QrCode,
   CheckCircle,
-  Receipt,
   User as UserIcon,
   Clock,
   Plus,
@@ -18,7 +17,6 @@ import {
   Check,
   X,
   Printer,
-  Sparkles,
 } from 'lucide-react';
 import { Tenant, Category, MenuItem, DiningTable, Order, CartItem, User } from '../../types';
 import { api } from '../../services/api';
@@ -26,10 +24,9 @@ import { api } from '../../services/api';
 interface CashierPosViewProps {
   tenant: Tenant;
   currentUser?: User;
-  onRefreshData?: () => void;
 }
 
-export const CashierPosView: React.FC<CashierPosViewProps> = ({ tenant, currentUser, onRefreshData }) => {
+export const CashierPosView: React.FC<CashierPosViewProps> = ({ tenant, currentUser }) => {
   const [activeTab, setActiveTab] = useState<'tables' | 'menu'>('tables');
   const [tables, setTables] = useState<DiningTable[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -40,7 +37,7 @@ export const CashierPosView: React.FC<CashierPosViewProps> = ({ tenant, currentU
   // Cart state
   const [cart, setCart] = useState<CartItem[]>([]);
   const [discountPercent, setDiscountPercent] = useState<number>(0);
-  const [orderNotes, setOrderNotes] = useState<string>('');
+  const [orderNotes] = useState<string>('');
   const [activeOrder, setActiveOrder] = useState<Order | null>(null);
 
   // Payment state

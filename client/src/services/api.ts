@@ -1,4 +1,4 @@
-import { Tenant, Category, DiningTable, Order, User } from '../types';
+import { Tenant, Category, DiningTable, Order } from '../types';
 
 const API_BASE = '/api';
 

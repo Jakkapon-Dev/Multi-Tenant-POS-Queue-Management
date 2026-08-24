@@ -3,12 +3,10 @@ import {
   TrendingUp,
   DollarSign,
   Receipt,
-  Users,
   CreditCard,
   QrCode,
   Banknote,
   Award,
-  Calendar,
   ArrowUpRight,
   RefreshCw,
 } from 'lucide-react';
