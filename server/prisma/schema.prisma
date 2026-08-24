@@ -1,0 +1,179 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// 🏢 Multi-Tenant Entity (Store / Restaurant)
+model Tenant {
+  id          String        @id @default(uuid())
+  name        String
+  slug        String        @unique
+  logoUrl     String?
+  currency    String        @default("THB")
+  taxRate     Float         @default(7.0) // 7% VAT
+  serviceFee  Float         @default(0.0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  users       User[]
+  categories  Category[]
+  menuItems   MenuItem[]
+  tables      DiningTable[]
+  orders      Order[]
+  ingredients Ingredient[]
+}
+
+// 👤 Staff & User Model with RBAC
+model User {
+  id           String   @id @default(uuid())
+  tenantId     String
+  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  email        String
+  passwordHash String
+  name         String
+  role         String   @default("CASHIER") // OWNER, MANAGER, CASHIER, KITCHEN
+  pinCode      String?  // 4-6 digit quick PIN for POS login
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([tenantId, email])
+}
+
+// 📂 Menu Category
+model Category {
+  id        String     @id @default(uuid())
+  tenantId  String
+  tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name      String
+  icon      String?
+  sortOrder Int        @default(0)
+  isActive  Boolean    @default(true)
+  menuItems MenuItem[]
+}
+
+// ☕ Dish / Beverage Item
+model MenuItem {
+  id             String          @id @default(uuid())
+  tenantId       String
+  tenant         Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  categoryId     String
+  category       Category        @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  name           String
+  description    String?
+  price          Float
+  imageUrl       String?
+  isAvailable    Boolean         @default(true)
+  prepTimeMinutes Int            @default(5)
+  sortOrder      Int             @default(0)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  modifierGroups ModifierGroup[]
+  recipeItems    RecipeItem[]
+}
+
+// 🎛️ Modifier Group (e.g. Sweetness Level, Milk Choice, Extra Shot)
+model ModifierGroup {
+  id         String           @id @default(uuid())
+  menuItemId String
+  menuItem   MenuItem         @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  name       String           // e.g. "ระดับความหวาน", "ประเภทนม"
+  isRequired Boolean          @default(false)
+  minSelect  Int              @default(0)
+  maxSelect  Int              @default(1)
+  options    ModifierOption[]
+}
+
+// 🔘 Modifier Options (e.g. Less Sweet 50%, Oat Milk +20฿)
+model ModifierOption {
+  id              String        @id @default(uuid())
+  modifierGroupId String
+  modifierGroup   ModifierGroup @relation(fields: [modifierGroupId], references: [id], onDelete: Cascade)
+  name            String
+  extraPrice      Float         @default(0.0)
+}
+
+// 🪑 Dining Table Model
+model DiningTable {
+  id             String   @id @default(uuid())
+  tenantId       String
+  tenant         Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tableNumber    String
+  zone           String   @default("Main Hall") // Indoor, Terrace, VIP
+  capacity       Int      @default(4)
+  qrCodeToken    String   @unique
+  status         String   @default("AVAILABLE") // AVAILABLE, OCCUPIED, RESERVED, BILL_REQUESTED
+  currentOrderId String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  orders         Order[]
+}
+
+// 🧾 Order Entity with State Machine
+model Order {
+  id            String      @id @default(uuid())
+  tenantId      String
+  tenant        Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tableId       String?
+  table         DiningTable? @relation(fields: [tableId], references: [id], onDelete: SetNull)
+  orderNumber   String      // e.g. #001
+  customerName  String?     @default("Walk-in Guest")
+  orderType     String      @default("DINE_IN") // DINE_IN, TAKEAWAY, DELIVERY
+  status        String      @default("PENDING") // PENDING, PREPARING, READY, SERVED, COMPLETED, CANCELLED
+  paymentStatus String      @default("UNPAID") // UNPAID, PAID, REFUNDED
+  paymentMethod String?     // CASH, PROMPTPAY, CREDIT_CARD
+  subtotal      Float       @default(0.0)
+  tax           Float       @default(0.0)
+  serviceFee    Float       @default(0.0)
+  discount      Float       @default(0.0)
+  total         Float       @default(0.0)
+  notes         String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  items         OrderItem[]
+}
+
+// 🍲 Order Item (Individual dish ordered)
+model OrderItem {
+  id         String   @id @default(uuid())
+  orderId    String
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuItemId String
+  name       String
+  price      Float
+  quantity   Int      @default(1)
+  subtotal   Float
+  status     String   @default("QUEUED") // QUEUED, COOKING, DONE, CANCELLED
+  notes      String?
+  modifiers  String?  // JSON string storing selected options
+  createdAt  DateTime @default(now())
+}
+
+// 📦 Raw Inventory Ingredient
+model Ingredient {
+  id            String       @id @default(uuid())
+  tenantId      String
+  tenant        Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name          String       // e.g. "เมล็ดกาแฟ House Blend (g)", "นมสด Meiji (ml)"
+  unit          String       // g, ml, pcs, shots
+  currentStock  Float        @default(1000.0)
+  minStockAlert Float        @default(200.0)
+  costPerUnit   Float        @default(0.5)
+  recipeItems   RecipeItem[]
+}
+
+// 📋 Recipe linkage between Menu and Ingredients for auto-deduction
+model RecipeItem {
+  id               String     @id @default(uuid())
+  menuItemId       String
+  menuItem         MenuItem   @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  ingredientId     String
+  ingredient       Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+  quantityRequired Float      // Amount deducted per dish
+}
