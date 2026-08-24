@@ -9,6 +9,7 @@ import tenantRoutes from './routes/tenant.routes.js';
 import menuRoutes from './routes/menu.routes.js';
 import tableRoutes from './routes/table.routes.js';
 import orderRoutes from './routes/order.routes.js';
+import inventoryRoutes from './routes/inventory.routes.js';
 import { setupSocketHandlers } from './sockets/orderSocket.js';
 
 dotenv.config();
@@ -40,6 +41,7 @@ app.use('/api/tenants', tenantRoutes);
 app.use('/api/menu', menuRoutes);
 app.use('/api/tables', tableRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/inventory', inventoryRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({

@@ -127,4 +127,21 @@ export const api = {
     if (!res.ok) throw new Error('Failed to process payment');
     return res.json();
   },
+
+  // Inventory
+  async getIngredients(tenantId: string): Promise<any[]> {
+    const res = await fetch(`${API_BASE}/inventory/tenant/${tenantId}`);
+    if (!res.ok) throw new Error('Failed to fetch ingredients');
+    return res.json();
+  },
+
+  async restockIngredient(ingredientId: string, amountToAdd: number): Promise<any> {
+    const res = await fetch(`${API_BASE}/inventory/${ingredientId}/restock`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amountToAdd }),
+    });
+    if (!res.ok) throw new Error('Failed to restock ingredient');
+    return res.json();
+  },
 };
