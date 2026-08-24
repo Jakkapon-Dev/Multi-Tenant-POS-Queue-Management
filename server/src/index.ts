@@ -9,6 +9,7 @@ import tenantRoutes from './routes/tenant.routes.js';
 import menuRoutes from './routes/menu.routes.js';
 import tableRoutes from './routes/table.routes.js';
 import orderRoutes from './routes/order.routes.js';
+import { setupSocketHandlers } from './sockets/orderSocket.js';
 
 dotenv.config();
 
@@ -30,24 +31,8 @@ app.set('io', io);
 app.use(cors());
 app.use(express.json());
 
-// Socket rooms
-io.on('connection', (socket) => {
-  console.log(`🔌 [Socket.io] Client connected: ${socket.id}`);
-
-  socket.on('join:tenant', (tenantId: string) => {
-    socket.join(`tenant:${tenantId}`);
-    console.log(`📡 [Socket.io] ${socket.id} joined tenant room: tenant:${tenantId}`);
-  });
-
-  socket.on('join:order', (orderId: string) => {
-    socket.join(`order:${orderId}`);
-    console.log(`📡 [Socket.io] ${socket.id} joined order room: order:${orderId}`);
-  });
-
-  socket.on('disconnect', () => {
-    console.log(`🔌 [Socket.io] Client disconnected: ${socket.id}`);
-  });
-});
+// Setup Real-time Event Handlers
+setupSocketHandlers(io);
 
 // API Routes
 app.use('/api/auth', authRoutes);
