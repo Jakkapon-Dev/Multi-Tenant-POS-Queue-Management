@@ -12,9 +12,9 @@ const MainApp: React.FC = () => {
 
   if (loading || !currentTenant) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-white space-y-4">
-        <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-        <p className="text-sm font-semibold text-slate-400">Loading OmniPOS Platform...</p>
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center text-slate-900 space-y-4">
+        <div className="w-12 h-12 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-sm font-bold text-slate-600">Loading OmniPOS Platform...</p>
       </div>
     );
   }
@@ -25,7 +25,7 @@ const MainApp: React.FC = () => {
     : undefined;
 
   return (
-    <div className="h-screen flex flex-col bg-slate-950 overflow-hidden select-none">
+    <div className="h-screen flex flex-col bg-slate-50 overflow-hidden select-none">
       
       {/* Demo Switcher Bar at Top */}
       <DemoRoleSwitcher />

@@ -27,7 +27,6 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
   const [loading, setLoading] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
 
-  // Web Audio chime
   const playNewOrderChime = () => {
     if (!soundEnabled) return;
     try {
@@ -140,34 +139,34 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
   });
 
   return (
-    <div className="flex-1 flex flex-col h-screen overflow-hidden bg-slate-950 text-slate-100 font-sans">
+    <div className="flex-1 flex flex-col h-screen overflow-hidden bg-slate-100 text-slate-900 font-sans">
       
       {/* Top KDS Navbar */}
-      <header className="h-16 bg-slate-900/80 backdrop-blur-xl border-b border-white/[0.08] px-6 flex items-center justify-between flex-shrink-0">
+      <header className="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between flex-shrink-0 shadow-xs">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-2xl bg-orange-500/20 text-orange-400 flex items-center justify-center font-black">
+            <div className="w-9 h-9 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center font-black">
               <ChefHat className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="font-extrabold text-sm text-white tracking-tight flex items-center gap-2">
+              <h2 className="font-extrabold text-sm text-slate-900 tracking-tight flex items-center gap-2">
                 Kitchen Display System (KDS)
-                <span className="w-2 h-2 rounded-full bg-orange-400 animate-ping"></span>
+                <span className="w-2 h-2 rounded-full bg-orange-500 animate-ping"></span>
               </h2>
-              <p className="text-[11px] text-slate-400 font-mono">{tenant.name} • Live Ticket Stream</p>
+              <p className="text-[11px] text-slate-500 font-mono">{tenant.name} • Live Ticket Stream</p>
             </div>
           </div>
 
           {/* Status Filter Tabs */}
-          <div className="flex bg-slate-950/80 p-1 rounded-xl border border-white/[0.08] ml-4">
+          <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200 ml-4">
             {(['ALL', 'PENDING', 'PREPARING', 'READY'] as const).map((status) => (
               <button
                 key={status}
                 onClick={() => setFilterStatus(status)}
-                className={`px-3 py-1 rounded-lg text-xs font-black transition ${
+                className={`px-3.5 py-1 rounded-lg text-xs font-black transition ${
                   filterStatus === status
-                    ? 'bg-orange-500 text-slate-950 shadow-md shadow-orange-500/20'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-slate-900 text-white shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 {status} ({orders.filter((o) => (status === 'ALL' ? true : o.status === status)).length})
@@ -182,8 +181,8 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
             onClick={() => setSoundEnabled(!soundEnabled)}
             className={`px-3 py-1.5 rounded-xl border transition flex items-center gap-1.5 text-xs font-bold ${
               soundEnabled
-                ? 'bg-slate-900 border-white/10 text-emerald-400'
-                : 'bg-slate-900/40 border-white/[0.04] text-slate-500'
+                ? 'bg-emerald-50 border-emerald-300 text-emerald-800'
+                : 'bg-slate-100 border-slate-200 text-slate-500'
             }`}
           >
             {soundEnabled ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
@@ -192,12 +191,12 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
 
           <button
             onClick={fetchKdsOrders}
-            className="p-2 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded-xl border border-white/10 transition"
+            className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl border border-slate-200 transition"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
 
-          <div className="bg-slate-900 border border-white/10 px-3 py-1.5 rounded-xl text-xs font-bold text-orange-400 flex items-center gap-1.5 font-mono">
+          <div className="bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-xl text-xs font-bold text-orange-700 flex items-center gap-1.5 font-mono">
             <Flame className="w-3.5 h-3.5" />
             <span>Chef Station</span>
           </div>
@@ -205,12 +204,12 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
       </header>
 
       {/* Kanban Ticket Board */}
-      <div className="flex-1 overflow-x-auto overflow-y-hidden p-6 bg-slate-950">
+      <div className="flex-1 overflow-x-auto overflow-y-hidden p-6 bg-slate-100">
         {displayedOrders.length === 0 ? (
-          <div className="h-full flex flex-col items-center justify-center text-center text-slate-500">
-            <UtensilsCrossed className="w-14 h-14 mb-3 stroke-1 text-slate-700 animate-bounce" />
-            <h3 className="text-base font-extrabold text-slate-300">All Kitchen Tickets Cleared</h3>
-            <p className="text-xs text-slate-500 mt-1">New incoming customer orders will appear here in real-time.</p>
+          <div className="h-full flex flex-col items-center justify-center text-center text-slate-400">
+            <UtensilsCrossed className="w-14 h-14 mb-3 stroke-1 text-slate-300 animate-bounce" />
+            <h3 className="text-base font-extrabold text-slate-700">All Kitchen Tickets Cleared</h3>
+            <p className="text-xs text-slate-400 mt-1">New incoming customer orders will appear here in real-time.</p>
           </div>
         ) : (
           <div className="flex gap-5 h-full items-start">
@@ -222,42 +221,42 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
               return (
                 <div
                   key={order.id}
-                  className={`w-80 flex-shrink-0 bg-slate-900 border rounded-3xl flex flex-col max-h-full shadow-2xl transition overflow-hidden ${
+                  className={`w-80 flex-shrink-0 bg-white border rounded-3xl flex flex-col max-h-full shadow-md transition overflow-hidden ${
                     order.status === 'PENDING'
-                      ? 'border-amber-500/60 ring-1 ring-amber-500/30'
+                      ? 'border-amber-400 ring-2 ring-amber-100'
                       : order.status === 'PREPARING'
-                      ? 'border-orange-500/60 ring-1 ring-orange-500/30'
-                      : 'border-emerald-500/60 ring-1 ring-emerald-500/30'
+                      ? 'border-orange-400 ring-2 ring-orange-100'
+                      : 'border-emerald-500 ring-2 ring-emerald-100'
                   }`}
                 >
                   {/* Ticket Header */}
                   <div
                     className={`p-4 flex items-center justify-between border-b ${
                       order.status === 'PENDING'
-                        ? 'bg-amber-500/10 border-amber-500/20'
+                        ? 'bg-amber-50 border-amber-200'
                         : order.status === 'PREPARING'
-                        ? 'bg-orange-500/10 border-orange-500/20'
-                        : 'bg-emerald-500/10 border-emerald-500/20'
+                        ? 'bg-orange-50 border-orange-200'
+                        : 'bg-emerald-50 border-emerald-200'
                     }`}
                   >
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-black text-base text-white font-mono">{order.orderNumber}</span>
-                        <span className="text-xs bg-slate-950/60 text-slate-200 font-bold px-2 py-0.5 rounded-lg border border-white/10">
+                        <span className="font-black text-base text-slate-900 font-mono">{order.orderNumber}</span>
+                        <span className="text-xs bg-white text-slate-800 font-bold px-2 py-0.5 rounded-lg border border-slate-200 shadow-2xs">
                           {order.table ? `Table ${order.table.tableNumber}` : 'Takeaway'}
                         </span>
                       </div>
-                      <p className="text-[11px] text-slate-400 mt-0.5">{order.customerName}</p>
+                      <p className="text-[11px] text-slate-500 mt-0.5 font-medium">{order.customerName}</p>
                     </div>
 
                     {/* Timer Badge */}
                     <div
                       className={`flex items-center gap-1 text-xs font-mono font-black px-2.5 py-1 rounded-xl ${
                         isUrgent
-                          ? 'bg-rose-500/20 text-rose-300 border border-rose-500/50 animate-pulse'
+                          ? 'bg-rose-100 text-rose-800 border border-rose-300 animate-pulse'
                           : isWarning
-                          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/50'
-                          : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/50'
+                          ? 'bg-amber-100 text-amber-900 border border-amber-300'
+                          : 'bg-emerald-100 text-emerald-800 border border-emerald-300'
                       }`}
                     >
                       <Clock className="w-3.5 h-3.5" />
@@ -267,14 +266,14 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
 
                   {/* Order Notes */}
                   {order.notes && (
-                    <div className="bg-amber-950/30 border-b border-amber-500/20 px-4 py-2 text-[11px] text-amber-300 flex items-center gap-1.5 font-semibold">
-                      <AlertTriangle className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
+                    <div className="bg-amber-50/80 border-b border-amber-200 px-4 py-2 text-[11px] text-amber-900 flex items-center gap-1.5 font-semibold">
+                      <AlertTriangle className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
                       <span>Note: {order.notes}</span>
                     </div>
                   )}
 
                   {/* Item Checklist */}
-                  <div className="flex-1 overflow-y-auto p-4 space-y-2.5 divide-y divide-white/[0.06]">
+                  <div className="flex-1 overflow-y-auto p-4 space-y-2.5 divide-y divide-slate-100">
                     {order.items.map((item) => {
                       const isDone = item.status === 'DONE';
                       let parsedModifiers: any[] = [];
@@ -296,14 +295,14 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
                             <div
                               className={`w-5 h-5 rounded-lg border flex items-center justify-center mt-0.5 transition ${
                                 isDone
-                                  ? 'bg-emerald-500 border-emerald-500 text-slate-950'
-                                  : 'border-slate-600 group-hover:border-orange-400'
+                                  ? 'bg-emerald-600 border-emerald-600 text-white'
+                                  : 'border-slate-300 group-hover:border-orange-500 bg-slate-50'
                               }`}
                             >
                               {isDone && <Check className="w-3.5 h-3.5 stroke-[3]" />}
                             </div>
                             <div>
-                              <span className="font-bold text-xs text-white">
+                              <span className="font-bold text-xs text-slate-900">
                                 {item.quantity}x {item.name}
                               </span>
                               {parsedModifiers.length > 0 && (
@@ -311,7 +310,7 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
                                   {parsedModifiers.map((m, idx) => (
                                     <span
                                       key={idx}
-                                      className="text-[10px] bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded border border-white/10"
+                                      className="text-[10px] bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded border border-slate-200"
                                     >
                                       {m.optionName || m}
                                     </span>
@@ -319,7 +318,7 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
                                 </div>
                               )}
                               {item.notes && (
-                                <p className="text-[10px] text-amber-300 italic mt-0.5">"{item.notes}"</p>
+                                <p className="text-[10px] text-amber-700 italic mt-0.5">"{item.notes}"</p>
                               )}
                             </div>
                           </div>
@@ -329,11 +328,11 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="p-4 border-t border-white/[0.08] bg-slate-900/90 flex gap-2">
+                  <div className="p-4 border-t border-slate-100 bg-slate-50 flex gap-2">
                     {order.status === 'PENDING' && (
                       <button
                         onClick={() => handleUpdateStatus(order.id, 'PREPARING')}
-                        className="flex-1 bg-orange-500 hover:bg-orange-400 text-slate-950 font-black py-2.5 rounded-2xl text-xs flex items-center justify-center gap-1.5 transition shadow-lg shadow-orange-500/20"
+                        className="flex-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black py-2.5 rounded-2xl text-xs flex items-center justify-center gap-1.5 transition shadow-xs"
                       >
                         <Flame className="w-3.5 h-3.5" />
                         <span>Start Cooking</span>
@@ -343,7 +342,7 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
                     {order.status === 'PREPARING' && (
                       <button
                         onClick={() => handleUpdateStatus(order.id, 'READY')}
-                        className="flex-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-2.5 rounded-2xl text-xs flex items-center justify-center gap-1.5 transition shadow-lg shadow-emerald-500/20"
+                        className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 rounded-2xl text-xs flex items-center justify-center gap-1.5 transition shadow-xs"
                       >
                         <CheckCircle2 className="w-3.5 h-3.5" />
                         <span>Ready / Bump</span>
@@ -353,7 +352,7 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
                     {order.status === 'READY' && (
                       <button
                         onClick={() => handleUpdateStatus(order.id, 'SERVED')}
-                        className="flex-1 bg-blue-500 hover:bg-blue-400 text-white font-black py-2.5 rounded-2xl text-xs flex items-center justify-center gap-1.5 transition shadow-lg shadow-blue-500/20"
+                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-black py-2.5 rounded-2xl text-xs flex items-center justify-center gap-1.5 transition shadow-xs"
                       >
                         <Check className="w-3.5 h-3.5" />
                         <span>Served to Table</span>
