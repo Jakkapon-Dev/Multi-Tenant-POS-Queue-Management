@@ -1,8 +1,8 @@
+import 'dotenv/config';
 import express from 'express';
 import http from 'http';
 import { Server as SocketIOServer } from 'socket.io';
 import cors from 'cors';
-import dotenv from 'dotenv';
 
 import authRoutes from './routes/auth.routes.js';
 import tenantRoutes from './routes/tenant.routes.js';
@@ -12,8 +12,6 @@ import orderRoutes from './routes/order.routes.js';
 import inventoryRoutes from './routes/inventory.routes.js';
 import analyticsRoutes from './routes/analytics.routes.js';
 import { setupSocketHandlers } from './sockets/orderSocket.js';
-
-dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
@@ -54,7 +52,10 @@ app.get('/api/health', (req, res) => {
 });
 
 if (process.env.NODE_ENV !== 'test') {
-  server.listen(PORT, () => {
+  const host = process.env.NODE_ENV === 'development' && process.env.DEMO_MODE === 'true'
+    ? 'localhost'
+    : undefined;
+  server.listen(Number(PORT), host, () => {
     console.log(`🚀 [POS Server] Ready on http://localhost:${PORT}`);
   });
 }

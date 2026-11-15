@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'pos_super_secret_jwt_key_2026';
+import { JWT_SECRET } from '../config/auth.js';
 
 export interface AuthenticatedUser {
   userId: string;
@@ -59,7 +59,7 @@ export const enforceTenantIsolation = (req: Request, res: Response, next: NextFu
     return;
   }
 
-  const requestedTenantId = req.params.tenantId || req.body.tenantId || req.query.tenantId;
+  const requestedTenantId = req.params.tenantId || req.body?.tenantId || req.query.tenantId;
   if (requestedTenantId && requestedTenantId !== req.user.tenantId) {
     res.status(403).json({
       error: 'Tenant Data Isolation: Access denied. Cannot view or alter data of a different restaurant.',

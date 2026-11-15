@@ -45,7 +45,7 @@ flowchart TB
 
     subgraph Database ["Data & Persistence Layer"]
         Prisma["Prisma ORM"]
-        DB[("Multi-Tenant SQLite / PostgreSQL")]
+        DB[("Multi-Tenant SQLite")]
     end
 
     CustomerView <-->|WebSocket + REST| Backend
@@ -61,30 +61,51 @@ flowchart TB
 ## 🚀 Quick Start Guide
 
 ### Prerequisites
-- **Node.js**: v18.0.0 or higher
+- **Node.js**: v24
 - **npm**: v9.0.0 or higher
+- **Windows**: clone into an ASCII-only path such as `C:/projects` so Prisma can create the SQLite file.
 
 ### Installation & Setup
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/your-username/Project-POS.git
-cd Project-POS
+git clone https://github.com/Jakkapon-Dev/Multi-Tenant-POS-Queue-Management.git
+cd Multi-Tenant-POS-Queue-Management
 
 # 2. Install dependencies
-npm install --prefix server
-npm install --prefix client
+npm ci --prefix server
+npm ci --prefix client
 
-# 3. Setup database and populate seed data
+# 3. Copy the sample settings (PowerShell users: Copy-Item server/.env.example server/.env)
+cp server/.env.example server/.env
+
+# 4. Create and seed the local SQLite database
 npm run prisma:push --prefix server
 npm run seed --prefix server
+```
 
-# 4. Start both Backend and Frontend concurrently
+Seeding clears the configured database before loading sample data. Use the SQLite database from the sample settings.
+
+Start the API and app in separate terminals from the repo root.
+
+```bash
+# Terminal 1
 npm run dev --prefix server
+
+# Terminal 2
 npm run dev --prefix client
 ```
 
-Open your browser at **`http://localhost:5173`** to explore all 5 interactive roles via the top **One-Click Demo Role Switcher**.
+### Demo: Send an order to the kitchen
+
+![Kitchen tickets after submitting orders from the QR menu](docs/OmniPOS-kitchen.png)
+
+1. Open [OmniPOS](http://localhost:5173) in two tabs and select **Artisan Brew & Bites** in both.
+2. In the first tab, open **3. Kitchen (KDS)**. Keep that tab open.
+3. In the second tab, open **1. QR Menu** to simulate a scan at the sample table. Select **Iced Velvet Latte**, choose **Add to Order**, then open **Review Cart** and click **Send Order to Kitchen**.
+4. The kitchen tab receives the ticket without a refresh. Compare the order number on the ticket with the one in the customer tab.
+
+The sample settings enable the role switcher for a local demo with sample data. The order list and KDS API require a staff token scoped to the requested store outside local demo mode.
 
 ---
 
@@ -112,7 +133,7 @@ Open your browser at **`http://localhost:5173`** to explore all 5 interactive ro
 
 ## 🧪 Automated Testing
 
-Run the built-in test suite:
+Run the unit tests and the order-list integration test. The integration test creates and removes its own SQLite database.
 ```bash
 npm run test --prefix server
 ```
@@ -121,7 +142,7 @@ npm run test --prefix server
 
 ## 🛡️ Security & GitHub Safety Guidelines
 
-For complete guidelines on keeping GitHub repositories secure from accidental secret leaks and account flags, review [GITHUB_SAFETY_GUIDE.md](file:///d:/code/Project-POS/GITHUB_SAFETY_GUIDE.md).
+For complete guidelines on keeping GitHub repositories secure from accidental secret leaks and account flags, review [GITHUB_SAFETY_GUIDE.md](./GITHUB_SAFETY_GUIDE.md).
 
 ---
 

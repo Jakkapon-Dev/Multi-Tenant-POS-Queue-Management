@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import prisma from '../config/prisma.js';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'pos_super_secret_jwt_key_2026';
+import { JWT_SECRET } from '../config/auth.js';
 
 export const loginWithEmail = async (req: Request, res: Response): Promise<void> => {
   try {

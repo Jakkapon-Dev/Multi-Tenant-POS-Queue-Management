@@ -1,3 +1,4 @@
+import { runOrderListIntegrationTest } from './order-list.integration.test.js';
 import { runOrderStateMachineTests } from './order-state-machine.test.js';
 import { runTenantIsolationTests } from './tenant-isolation.test.js';
 
@@ -9,8 +10,10 @@ async function main() {
   const t1 = runOrderStateMachineTests();
   const t2 = runTenantIsolationTests();
 
-  const totalPassed = t1.testsPassed + t2.testsPassed;
-  const totalTests = t1.testsTotal + t2.testsTotal;
+  await runOrderListIntegrationTest();
+
+  const totalPassed = t1.testsPassed + t2.testsPassed + 1;
+  const totalTests = t1.testsTotal + t2.testsTotal + 1;
 
   console.log('====================================================');
   console.log(`🎉 ALL TESTS PASSED! (${totalPassed}/${totalTests} tests successful)`);
