@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   ChefHat,
   Clock,
@@ -25,6 +25,7 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const [filterStatus, setFilterStatus] = useState<'ALL' | 'PENDING' | 'PREPARING' | 'READY'>('ALL');
   const [search, setSearch] = useState('');
+  const searchInput = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
 
@@ -210,12 +211,28 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
         <label htmlFor="ticket-search" className="text-xs font-bold">Find a ticket</label>
         <input
           id="ticket-search"
+          ref={searchInput}
           type="search"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           placeholder="Order, table, or dish"
           className="min-w-0 w-48 px-3 py-1.5 rounded-lg border border-slate-300 text-sm"
         />
+        {search && (
+          <button
+            type="button"
+            onClick={() => {
+              setSearch('');
+              searchInput.current?.focus();
+            }}
+            className="px-2 py-1 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100"
+          >
+            Clear search
+          </button>
+        )}
+        <span role="status" className="text-xs text-slate-500">
+          {displayedOrders.length} {displayedOrders.length === 1 ? 'ticket' : 'tickets'}
+        </span>
       </div>
 
       {/* Kanban Ticket Board */}
