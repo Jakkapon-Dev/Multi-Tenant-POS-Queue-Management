@@ -24,6 +24,7 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
   const [orders, setOrders] = useState<Order[]>([]);
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const [filterStatus, setFilterStatus] = useState<'ALL' | 'PENDING' | 'PREPARING' | 'READY'>('ALL');
+  const [search, setSearch] = useState('');
   const [loading, setLoading] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
 
@@ -133,10 +134,12 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
     return Math.max(0, Math.floor((now - start) / 60000));
   };
 
-  const displayedOrders = orders.filter((o) => {
-    if (filterStatus === 'ALL') return true;
-    return o.status === filterStatus;
+  const query = search.trim().toLowerCase();
+  const matchingOrders = orders.filter((order) => {
+    const fields = [order.orderNumber, order.table?.tableNumber, ...order.items.map((item) => item.name)];
+    return fields.some((field) => field?.toLowerCase().includes(query));
   });
+  const displayedOrders = matchingOrders.filter((order) => filterStatus === 'ALL' || order.status === filterStatus);
 
   return (
     <div className="flex-1 flex flex-col h-screen overflow-hidden bg-slate-100 text-slate-900 font-sans">
@@ -169,7 +172,7 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                {status} ({orders.filter((o) => (status === 'ALL' ? true : o.status === status)).length})
+                {status} ({matchingOrders.filter((o) => (status === 'ALL' ? true : o.status === status)).length})
               </button>
             ))}
           </div>
@@ -203,13 +206,29 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
         </div>
       </header>
 
+      <div className="flex flex-wrap items-center gap-2 px-6 py-3 bg-white border-b border-slate-200">
+        <label htmlFor="ticket-search" className="text-xs font-bold">Find a ticket</label>
+        <input
+          id="ticket-search"
+          type="search"
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder="Order, table, or dish"
+          className="min-w-0 w-48 px-3 py-1.5 rounded-lg border border-slate-300 text-sm"
+        />
+      </div>
+
       {/* Kanban Ticket Board */}
       <div className="flex-1 overflow-x-auto overflow-y-hidden p-6 bg-slate-100">
         {displayedOrders.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center text-slate-400">
             <UtensilsCrossed className="w-14 h-14 mb-3 stroke-1 text-slate-300 animate-bounce" />
-            <h3 className="text-base font-extrabold text-slate-700">All Kitchen Tickets Cleared</h3>
-            <p className="text-xs text-slate-400 mt-1">New incoming customer orders will appear here in real-time.</p>
+            <h3 className="text-base font-extrabold text-slate-700">
+              {query ? 'No tickets match your search' : 'No tickets in this status'}
+            </h3>
+            <p className="text-xs text-slate-500 mt-1">
+              {query ? 'Try another order, table, or dish.' : 'Incoming orders will appear here as they arrive.'}
+            </p>
           </div>
         ) : (
           <div className="flex gap-5 h-full items-start">
