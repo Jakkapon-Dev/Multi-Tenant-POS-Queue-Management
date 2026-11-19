@@ -25,6 +25,7 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const [filterStatus, setFilterStatus] = useState<'ALL' | 'PENDING' | 'PREPARING' | 'READY'>('ALL');
   const [search, setSearch] = useState('');
+  const [oldestFirst, setOldestFirst] = useState(true);
   const searchInput = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
@@ -140,7 +141,11 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
     const fields = [order.orderNumber, order.table?.tableNumber, ...order.items.map((item) => item.name)];
     return fields.some((field) => field?.toLowerCase().includes(query));
   });
-  const displayedOrders = matchingOrders.filter((order) => filterStatus === 'ALL' || order.status === filterStatus);
+  const displayedOrders = matchingOrders
+    .filter((order) => filterStatus === 'ALL' || order.status === filterStatus)
+    .sort((a, b) => oldestFirst
+      ? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
   return (
     <div className="flex-1 flex flex-col h-screen overflow-hidden bg-slate-100 text-slate-900 font-sans">
@@ -230,6 +235,13 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
             Clear search
           </button>
         )}
+        <label className="text-xs font-bold">Ticket order
+          <select value={oldestFirst ? 'oldest' : 'newest'} onChange={(event) => setOldestFirst(event.target.value === 'oldest')}
+            className="ml-2 px-2 py-1.5 rounded-lg border border-slate-300">
+            <option value="oldest">Oldest first</option>
+            <option value="newest">Newest first</option>
+          </select>
+        </label>
         <span role="status" className="text-xs text-slate-500">
           {displayedOrders.length} {displayedOrders.length === 1 ? 'ticket' : 'tickets'}
         </span>
