@@ -188,6 +188,8 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
           {/* Sound alert switch */}
           <button
             onClick={() => setSoundEnabled(!soundEnabled)}
+            aria-pressed={soundEnabled}
+            aria-label="Kitchen order chime"
             className={`px-3 py-1.5 rounded-xl border transition flex items-center gap-1.5 text-xs font-bold ${
               soundEnabled
                 ? 'bg-emerald-50 border-emerald-300 text-emerald-800'
@@ -200,6 +202,8 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
 
           <button
             onClick={fetchKdsOrders}
+            aria-label="Refresh kitchen tickets"
+            disabled={loading}
             className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl border border-slate-200 transition"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
