@@ -26,6 +26,7 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
   const [filterStatus, setFilterStatus] = useState<'ALL' | 'PENDING' | 'PREPARING' | 'READY'>('ALL');
   const [search, setSearch] = useState('');
   const [oldestFirst, setOldestFirst] = useState(true);
+  const [longWaitOnly, setLongWaitOnly] = useState(false);
   const searchInput = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
@@ -143,6 +144,7 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
   });
   const displayedOrders = matchingOrders
     .filter((order) => filterStatus === 'ALL' || order.status === filterStatus)
+    .filter((order) => !longWaitOnly || getElapsedMinutes(order.createdAt) > 10)
     .sort((a, b) => oldestFirst
       ? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
@@ -246,6 +248,10 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
             <option value="newest">Newest first</option>
           </select>
         </label>
+        <label className="flex items-center gap-2 text-xs font-bold">
+          <input type="checkbox" checked={longWaitOnly} onChange={(event) => setLongWaitOnly(event.target.checked)} />
+          Waiting over 10 minutes
+        </label>
         <span role="status" className="text-xs text-slate-500">
           {displayedOrders.length} {displayedOrders.length === 1 ? 'ticket' : 'tickets'}
         </span>
@@ -257,10 +263,10 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
           <div className="h-full flex flex-col items-center justify-center text-center text-slate-400">
             <UtensilsCrossed className="w-14 h-14 mb-3 stroke-1 text-slate-300 animate-bounce" />
             <h3 className="text-base font-extrabold text-slate-700">
-              {query ? 'No tickets match your search' : 'No tickets in this status'}
+              {longWaitOnly ? 'No long-wait tickets match these filters' : query ? 'No tickets match your search' : 'No tickets in this status'}
             </h3>
             <p className="text-xs text-slate-500 mt-1">
-              {query ? 'Try another order, table, or dish.' : 'Incoming orders will appear here as they arrive.'}
+              {longWaitOnly ? 'Turn off the waiting-time filter to see shorter waits.' : query ? 'Try another order, table, or dish.' : 'Incoming orders will appear here as they arrive.'}
             </p>
           </div>
         ) : (
