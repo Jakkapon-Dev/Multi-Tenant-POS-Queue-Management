@@ -49,7 +49,7 @@ export const DemoRoleSwitcher: React.FC = () => {
                 PRO
               </span>
             </div>
-            <p className="text-[10px] text-slate-500 font-mono">v0.3.2</p>
+            <p className="text-[10px] text-slate-500 font-mono">v0.3.3</p>
           </div>
         </div>
 

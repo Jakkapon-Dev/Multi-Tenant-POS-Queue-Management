@@ -1,6 +1,6 @@
 {
   "name": "project-pos",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Multi-Tenant Restaurant & Cafe POS with Real-Time Kitchen Display System",
   "private": true,
   "scripts": {
