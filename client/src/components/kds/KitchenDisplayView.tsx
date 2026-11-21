@@ -29,6 +29,7 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
   const [longWaitOnly, setLongWaitOnly] = useState(false);
   const searchInput = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [loadError, setLoadError] = useState('');
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
 
   const playNewOrderChime = () => {
@@ -93,10 +94,12 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
   const fetchKdsOrders = async () => {
     try {
       setLoading(true);
+      setLoadError('');
       const data = await api.getKdsOrders(tenant.id);
       setOrders(data);
     } catch (err) {
       console.error('Failed to load KDS orders:', err);
+      setLoadError('Could not refresh kitchen tickets. The list may be out of date. Try Refresh kitchen tickets.');
     } finally {
       setLoading(false);
     }
@@ -256,6 +259,9 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ tenant }
           {displayedOrders.length} {displayedOrders.length === 1 ? 'ticket' : 'tickets'}
         </span>
       </div>
+
+      {loadError && <p role="alert" className="px-6 py-3 bg-amber-50 text-amber-900">{loadError}</p>}
+      {loading && <p role="status" className="px-6 py-2 text-sm text-slate-600">Refreshing kitchen tickets…</p>}
 
       {/* Kanban Ticket Board */}
       <div className="flex-1 overflow-x-auto overflow-y-hidden p-6 bg-slate-100">
